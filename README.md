@@ -30,3 +30,4 @@ ething to populate existing rows.*! indica q temos linhas. Se inserirmos nova co
 ## argumentos dos campos (Fields)
 * na base de dados os campos são integer e varchar(20)
 * 
+https://courses.prettyprinted.com/courses/django-database-essentials/lectures/4674921
