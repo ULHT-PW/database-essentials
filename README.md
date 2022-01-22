@@ -83,9 +83,10 @@ estrutura da base de dados
 * criemos 6 elementos
 
 ## Field Lookups [1](https://docs.djangoproject.com/en/4.0/topics/db/queries/#field-lookups) [detailed](https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups)
-* especificam a clausula do SQL WHERE
-* podemos usar em get, filter, exculde
-* sintaxe: field__lookuptype=value
+
+* podemos usar em **get, filter, exclude** para especificar clausulas do SQL WHERE
+* sintaxe: `class.objects.get/filter/exclude(field__lookuptype=value)`
+* exemplo:
 ```
 Entry.objects.filter(pub_date__lte='2006-01-01')
 
@@ -93,8 +94,21 @@ traduz-se em SQL:
 
 SELECT * FROM blog_entry WHERE pub_date <= '2006-01-01';
 ```
-* iexact, case-insensitive match. `Blog.objects.get(name__iexact="beatles blog")` Would match a Blog titled "Beatles Blog", "beatles blog", or even "BeAtlES blOG".
+campos:
+* **exact**, valor exato
+* **iexact**, case-insensitive match (correspondência sem distinção entre maiúsculas e minúsculas). 
+   * `Blog.objects.get(name__iexact="beatles blog")` corresponderia a um Blog cujo campo *name* fosse `Beatles Blog`, `beatles blog`, ou até `BeAtlES blOG`.
+* **contains**
+   * `Entry.objects.get(headline__contains='Lennon')` corresponderia ao headline com valor 'Today Lennon honored' mas não a 'today lennon honored'.
+* **icontains**, sem distinção entre maiúsculas e minúsculas
+* **in** iteravel (lista, tuplo ou QuerySet) especificar intervalo Simple.objects.filter(age__in=[6, 10])
+* **gt** '>': results = Simple.objects.filter(age__gt=18) 
+* **gte** '>=': results = Simple.objects.filter(age__gte=18) 
+* **lt** '<': results = Simple.objects.filter(age__lt=18) 
+* **lte** '<=': results = Simple.objects.filter(age__lte=18) 
+* **startswith endswith**
+* **range** intervalo
+* **regex**
 
-* contains. `Entry.objects.get(headline__contains='Lennon')` will match the headline 'Today Lennon honored' but not 'today lennon honored'.
-* icontains
-* in iteravel (lista, tuplo ou QuerySet)
+Fazer um exemplo:
+* usar exact com um campo | por maiuscula no valor e ver q nao escolhe | usar iexact e ve que apanha 
