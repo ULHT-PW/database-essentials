@@ -81,3 +81,19 @@ estrutura da base de dados
 * filter retorna um QuerySet, ao qual podemos apliar um filtro novamente 
 * Simple.objects.filter(number=0).filter(url='www.yahoo.com')
 * criemos 6 elementos
+
+## Field Lookups [1](https://docs.djangoproject.com/en/4.0/topics/db/queries/#field-lookups) [detailed](https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups)
+* especificam a clausula do SQL WHERE
+* podemos usar em get, filter, exculde
+* sintaxe: field__lookuptype=value
+```
+Entry.objects.filter(pub_date__lte='2006-01-01')
+
+traduz-se em SQL:
+
+SELECT * FROM blog_entry WHERE pub_date <= '2006-01-01';
+```
+* iexact, case-insensitive match. `Blog.objects.get(name__iexact="beatles blog")` Would match a Blog titled "Beatles Blog", "beatles blog", or even "BeAtlES blOG".
+
+* contains. `Entry.objects.get(headline__contains='Lennon')` will match the headline 'Today Lennon honored' but not 'today lennon honored'.
+* icontains
