@@ -97,3 +97,4 @@ SELECT * FROM blog_entry WHERE pub_date <= '2006-01-01';
 
 * contains. `Entry.objects.get(headline__contains='Lennon')` will match the headline 'Today Lennon honored' but not 'today lennon honored'.
 * icontains
+* in iteravel (lista, tuplo ou QuerySet)
