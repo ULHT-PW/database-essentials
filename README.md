@@ -31,3 +31,53 @@ ething to populate existing rows.*! indica q temos linhas. Se inserirmos nova co
 * na base de dados os campos são integer e varchar(20)
 * 
 https://courses.prettyprinted.com/courses/django-database-essentials/lectures/4674921
+
+## admin
+estrutura da base de dados
+
+## create update delete
+* adicionar conteudos a base de dados com código, `py manage.py shell`
+* from app.models import class 
+* criar objeto (com nomes de atributos), obj = Simple(atributo='valor') 
+* mostrar em DB Browser que não apareceu
+* gravar
+* mostrar em DB Browser que apareceu
+* alterar um atributo e gravar
+* mostrar em DB Browser que apareceu
+* apagar obj.delete(), mostra qtas linhas apagou e o que apagou
+* mostrar em DB Browser que apagou
+
+## obter uma única linha
+* numa app precisamos manipular objetos da BD, precisamos de os pesquisar. 
+* é onde o django é forte, a fazer queries
+* podemos querer um objeto, ou vários. vamos obter um só
+* método get podemos especificar exatamente o que queremos. podemso inserir o id duma coluna, id/pk obj = Simple.objects.get(id=1)
+* se não existir, lança erro. se existir multiplos objetos iguais, dá erro. usar try catch para prevenir erros
+
+## obter todas as linhas
+* obter multiplos resultados
+* results =  Simple.objects.all() retorna tudo
+* podemos iterar pelos objetos e seus atributos com ciclos for
+* o QuerySet é indexável, results[0]
+
+## Filter
+* filter() para limitar resultados da base de dados, procurando apenas o que escrevemos em filter
+* filter() retorna um QuerySet, lista
+* Simple.objects.filter(number=10) retorna os que teem number = 10
+* podemos incluir condições:
+   * 'e': results = Simple.objects.filter(height=80, age=20) 
+   * 'ou' results = Simple.objects.filter(number=10) | Simple.objects.filter((number=20)
+   * '>': results = Simple.objects.filter(age__gt=18) 
+   * '>=': results = Simple.objects.filter(age__gte=18) 
+   * '<': results = Simple.objects.filter(age__lt=18) 
+   * '<=': results = Simple.objects.filter(age__lte=18) 
+ 
+## Exclude
+* Simple.objects.filter(number=10)
+* oposto/complemento de filter. retorna tudo o que não tenha o especificado no argumento de exclude
+* se fizermos exclude do que pusemos filter, obtemos o complemento
+
+## Encadeando filtros
+* filter retorna um QuerySet, ao qual podemos apliar um filtro novamente 
+* Simple.objects.filter(number=0).filter(url='www.yahoo.com')
+* criemos 6 elementos
