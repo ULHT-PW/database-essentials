@@ -84,7 +84,7 @@ estrutura da base de dados
 
 ## Field Lookups [1](https://docs.djangoproject.com/en/4.0/topics/db/queries/#field-lookups) [detailed](https://docs.djangoproject.com/en/4.0/ref/models/querysets/#field-lookups)
 
-* podemos usar em **get, filter, exclude** para especificar clausulas do SQL WHERE
+* operadores que podemos usar em **get, filter, exclude** para especificar clausulas do SQL WHERE
 * sintaxe: `class.objects.get/filter/exclude(field__lookuptype=value)`
 * exemplo:
 ```
@@ -101,14 +101,43 @@ campos:
 * **contains**
    * `Entry.objects.get(headline__contains='Lennon')` corresponderia ao headline com valor 'Today Lennon honored' mas não a 'today lennon honored'.
 * **icontains**, sem distinção entre maiúsculas e minúsculas
-* **in** iteravel (lista, tuplo ou QuerySet) especificar intervalo Simple.objects.filter(age__in=[6, 10])
+* **in** identifica todos osobjetos cujo campo está numa lista (tuplo ou QuerySet)
+   * `Simple.objects.filter(age__in=[6, 10])` retorna todos os que tiverem age 6 ou 10
 * **gt** '>': results = Simple.objects.filter(age__gt=18) 
 * **gte** '>=': results = Simple.objects.filter(age__gte=18) 
 * **lt** '<': results = Simple.objects.filter(age__lt=18) 
 * **lte** '<=': results = Simple.objects.filter(age__lte=18) 
 * **startswith endswith**
-* **range** intervalo
+* **range** identifica os que estão num intervalo
+   * `Pessoa.objects.filter(idade__range=(8,14))`, pessoas com idades no intervalo [8, 14[ 
 * **regex**
 
 Fazer um exemplo:
 * usar exact com um campo | por maiuscula no valor e ver q nao escolhe | usar iexact e ve que apanha 
+* Simple.objects.filter(number__in=[1,10]) 
+* exemplo de gt, gte
+* startswith
+
+## Limiting and offset - slices
+* podemos usar slices 
+* Simple.objects.all()[:3] retorna os 3 primeiros
+* Simple.objects.all()[2:] retorna todos excepto os dois primeiros
+* Simple.objects.all()[2:5] retorna 5-2=3 resultados
+
+## Order by
+* ordem natural é por inserção
+* podemos ordenar em função de um atributo
+   * `Simple.objects.order_by('id')`, crescentemente pelo id
+   * `Simple.objects.order_by('-id')`, decrescentemente pelo id
+   * `Simple.objects.order_by('nome', 'ápelido')`, ordena primeiro pelo nome, e para nomes iguais ordena pelo apelido
+* podemos aplicar um filtro
+
+# Count
+* podemos contar qtos resultados reotrnados por uma query
+* Simple.objects.filter(number=10).count()
+
+
+
+
+
+see database on Pycharm: https://www.youtube.com/watch?v=_FlpiNno088
