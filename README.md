@@ -132,12 +132,37 @@ Fazer um exemplo:
    * `Simple.objects.order_by('nome', 'ápelido')`, ordena primeiro pelo nome, e para nomes iguais ordena pelo apelido
 * podemos aplicar um filtro
 
-# Count
-* podemos contar qtos resultados reotrnados por uma query
+## Count
+* podemos contar quantos resultados são retornados por uma query
 * Simple.objects.filter(number=10).count()
 
-
-
-
+## Date
+https://docs.djangoproject.com/en/4.0/ref/models/querysets/#date
+* DateTimeField, ou DateField
+* correspondem ao datetime do Python `from datetime import date, datetime`. Django converte estes objetos em informação na base de dados
+* Field Lookups: date, time, year, month, day, hour, etc...
+* exemplos:
+```python
+>>> from example.models import Date
+>>> from datetime import datetime
+>>> new_date = datetime.now()
+>>> new_date
+datetime.datetime(2022, 1, 22, 21, 19, 28, 54842)
+>>> my_date = Date(date=new_date)
+>>> my_date.save()
+>>> Date.objects.filter(date__date=new_date)
+<QuerySet [<Date: Date object (1)>]>
+>>> another_date = datetime.now()
+>>> Date.objects.filter(date__date=another_date)
+<QuerySet [<Date: Date object (1)>]>
+>>> Date.objects.filter(date__time=new_date)
+<QuerySet [<Date: Date object (1)>]>
+>>> Date.objects.filter(date__time=another_date)
+<QuerySet []>
+>>> Date.objects.filter(date__month=1)
+<QuerySet [<Date: Date object (1)>]>
+>>> Date.objects.filter(date__day=22)
+<QuerySet [<Date: Date object (1)>]>
+```
 
 see database on Pycharm: https://www.youtube.com/watch?v=_FlpiNno088
