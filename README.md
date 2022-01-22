@@ -1,5 +1,5 @@
 # database-essentials
-
+[prettyprinted course](https://courses.prettyprinted.com/courses/django-database-essentials/lectures/4674919)
 ### cria projeto django, observar db.sqlite com DB Browser, criar superuser 
 * cria projeto em Pycharm
 * migra `py manage.py migrate
