@@ -1,18 +1,22 @@
 # database-essentials
 [prettyprinted course](https://courses.prettyprinted.com/courses/django-database-essentials/lectures/4674919)
-### cria projeto django, observar db.sqlite com DB Browser, criar superuser 
+
+
+### cria projeto django, observar db.sqlite com Pycharm (DB Browser), ver impacto de criar superuser 
 * cria projeto em Pycharm
 * migra `py manage.py migrate
-* abre com DB Browser o ficheiro .sqlite3
+* abre com Pycharm (ou DB Browser) o ficheiro .sqlite3
 * observa a estrutura da base de dados
-* cria `py manage.py createsuperuser`
-* ve na base de dados que foi registado
-* ve migrations
-*
-### criar aplicação e Model Simple, makemigratinos e migrate
-* cria aplicação example
-* cria modelo apenas com atributo text
-* regista em settings a aplicação
+* o nome das tabelas têm como prefixo o nome da aplicação, tudo em minuscula
+* existem várias aplicações instaladas (ver em INSTALLED_APPS)
+* criar `py manage.py createsuperuser`
+* ver na base de dados, tabela auth_user, que foi registado
+* ver migrations
+
+### criar aplicação e modelo
+* criar aplicação example
+* criar modelo apenas com atributo text
+* registar em settings a aplicação
 * makemigrations, e observa instrução para criar modelo Simple
 * se formos a migrations e abrirmos ficheiro 0001_initial.py, este tem instruções para modificar a base de dados. vemos instrução para criar modelo, com atributos/colunas id (pk) e text
 * migrate executa
@@ -87,11 +91,11 @@ estrutura da base de dados
 * operadores que podemos usar em **get, filter, exclude** para especificar clausulas do SQL WHERE
 * sintaxe: `class.objects.get/filter/exclude(field__lookuptype=value)`
 * exemplo:
-```
+```python
 Entry.objects.filter(pub_date__lte='2006-01-01')
-
+```
 traduz-se em SQL:
-
+```sql
 SELECT * FROM blog_entry WHERE pub_date <= '2006-01-01';
 ```
 campos:
@@ -143,26 +147,155 @@ https://docs.djangoproject.com/en/4.0/ref/models/querysets/#date
 * Field Lookups: date, time, year, month, day, hour, etc...
 * exemplos:
 ```python
->>> from example.models import Date
->>> from datetime import datetime
->>> new_date = datetime.now()
->>> new_date
+from example.models import Date
+from datetime import datetime
+new_date = datetime.now()
+new_date
 datetime.datetime(2022, 1, 22, 21, 19, 28, 54842)
->>> my_date = Date(date=new_date)
->>> my_date.save()
->>> Date.objects.filter(date__date=new_date)
-<QuerySet [<Date: Date object (1)>]>
->>> another_date = datetime.now()
->>> Date.objects.filter(date__date=another_date)
-<QuerySet [<Date: Date object (1)>]>
->>> Date.objects.filter(date__time=new_date)
-<QuerySet [<Date: Date object (1)>]>
->>> Date.objects.filter(date__time=another_date)
-<QuerySet []>
->>> Date.objects.filter(date__month=1)
-<QuerySet [<Date: Date object (1)>]>
->>> Date.objects.filter(date__day=22)
-<QuerySet [<Date: Date object (1)>]>
+my_date = Date(date=new_date)  # guarda objeto datetime no campo DateTimeField
+my_date.save()
+Date.objects.filter(date__date=new_date) # filtra objetos com a mesma datetime
+# <QuerySet [# <Date: Date object (1)>]>
+another_date = datetime.now()
+Date.objects.filter(date__date=another_date) # como difere de alguns segundos, não há correspondecia
+# <QuerySet [# <Date: Date object (1)>]>
+Date.objects.filter(date__time=new_date) 
+# <QuerySet [# <Date: Date object (1)>]>
+Date.objects.filter(date__time=another_date)
+# <QuerySet []>
+Date.objects.filter(date__month=1) # filtra objetos com mes 1
+# <QuerySet [# <Date: Date object (1)>]>
+Date.objects.filter(date__day=22)  # filtra objetos com dia 22
+# <QuerySet [# <Date: Date object (1)>]>
 ```
 
-see database on Pycharm: https://www.youtube.com/watch?v=_FlpiNno088
+## Null and blank
+* campo com `null = True` indica à **base de dados** que pode ser NULL
+* campo com `blank = True` indica ao **Django** que  **não é obrigatório no formulário** 
+* quando queremos `blank = True` devemos por `null = True` excepto em CharField e TextField, que em django são guardados como string vazia (`''`) pelo q não precisamos de por `null = True`
+* criemos classe `NullExample` com campo `col` do tipo `CharField` 
+```python
+from example.models import NullExample
+one = NullExample(col='one')
+one.save()
+two = NullExample(col=None)
+two.save()
+three= NullExample()
+three.save()
+NullExample.objects.filter(col__isnull=True)
+# <QuerySet [<NullExample: NullExample object (2)>, <NullExample: NullExample object (3)>]>
+NullExample.objects.filter(col__isnull=False)
+# <QuerySet [<NullExample: NullExample object (1)>]>
+```
+
+## Relações One to Many
+* Ao trabalhar com bases de dados relacionais, um aspecto importante é podermos ter relações entre duas ou mais tabelas
+* relação **pai-filho**, relação one-to-many ou many-to-one:
+   * um pai pode ter vários filhos
+   * cada filho apenas tem um pai
+
+```python
+class Language(models.Model):
+    name = models.CharField(max_length=10)     
+        
+class Framework(models.Model):
+    name = models.CharField(max_length=10)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE) # se apagamos o pai, apaga os filhos
+```
+
+Podemos criar alguns objetos, linguagem **Python** com frameworks *Django* e *Flask*, e **Java** com *Spring*:
+```python
+from example.models import Language, Framework
+python = Language(name='Python')
+python.save()
+django = Framework(name='Django')
+django.language = python
+flask = Framework(name='Flask', language=python)
+flask.save()
+django.save()
+java=Language(name='Java')
+java.save()
+spring = Framework(name='Spring', language=java)
+spring.save()
+Framework.objects.all()
+# <QuerySet [<Framework: Flask>, <Framework: Django>, <Framework: Spring>]>
+```
+
+## Consultas de relações One To Many
+Podemos consultar as frameworks que teem como linguagem Python
+* usando a foreignkey language:
+```python
+Framework.objects.filter(language=1)
+# <QuerySet [<Framework: Flask>, <Framework: Django>]>
+```
+* usando o nome da linguagem, com o fieldLookup `language__name`:
+```python
+Framework.objects.filter(language__name='Python') # filtrar Frameworks com linguagem Python
+# <QuerySet [<Framework: Flask>, <Framework: Django>]>
+```
+Podemos também saber as linguagens que têm como framework Django, pois o Django disponibiliza um campo com nome da classe filho em minúsculas:
+```python
+Language.objects.filter(framework__name='Django')
+# <QuerySet [<Language: Python>]>
+Language.objects.filter(framework__name__startswith='Dj')  # podemos combinar com FieldLookups
+# <QuerySet [<Language: Python>]>
+```
+Uma tabela pode ter múltiplos elementos da outra. E a outra múltiplos elementos da primeira.
+
+## Relações Many To Many
+* Podemos ter tabelas com várias instancias relacionadas: desportos e alunos.
+  * um aluno pode praticar vários desportos
+  * um desporto pode ser praticado por vários alunos
+* A relação ManyToMany especifica-se apenas numa das classes, por convenção a de menor hierarquia (aluno neste caso) 
+* Usa-se o **método add** para adicionar uma relação ManyToMany a um objeto
+```python
+class Desporto(models.Model):
+    nome = models.CharField(max_length=30)
+
+class Aluno(models.Model):
+    nome = models.CharField(max_length=30)
+    desportos = models.ManyToManyField(Desporto)
+```
+* fazemos makemigrations e migrate 
+* abrimos tabelas e vemos que existe uma terceira tabela, que relaciona ambas
+```python
+from example.models import Desporto, Aluno
+
+vela = Desporto(nome='vela')
+vela.save()
+
+tenis = Desporto(nome = 'tenis')
+tenis.save()
+
+luis = Aluno(nome='Luis')
+luis.save()
+
+ana = Aluno(nome ='Ana')
+ana.save()
+
+luis.desportos.add(futebol) # método add para adicionar relação ManyToMany
+luis.desportos.add(vela)
+
+ana.desportos.add(vela)
+ana.desportos.create(nome='dança') # permite criar um novo desporto!
+```
+
+## Consultas de relações Many to Many
+* semelhante a consultas de relações Many to One
+```python
+Aluno.objects.filter(desportos__nome='vela')  # alunos que praticam vela
+# <QuerySet [<Aluno: Luis>, <Aluno: Ana>]>
+Desporto.objects.filter(aluno__nome='Ana')  # desportos que a Ana pratica
+# <QuerySet [<Desporto: vela>, <Desporto: dança>]>
+
+ana = Aluno.objects.get(nome='Ana')
+ana.desportos.all()
+# <QuerySet [<Desporto: vela>, <Desporto: dança>]>
+```
+
+* a classe Desporto não tem campo *alunos*. Usa-se o nome da classe em minúscula (aluno) e o sufixo '__set' (aluno__set). Exemplo:
+```python
+vela = Desporto.objects.get(nome='vela')
+vela.aluno_set.all()         # 
+# <QuerySet [<Aluno: Luis>, <Aluno: Ana>]>
+```
