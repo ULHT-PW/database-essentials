@@ -33,11 +33,29 @@ ething to populate existing rows.*! indica q temos linhas. Se inserirmos nova co
 
 ## argumentos dos campos (Fields)
 * na base de dados os campos são integer e varchar(20)
-* 
+
 https://courses.prettyprinted.com/courses/django-database-essentials/lectures/4674921
 
 ## admin
-estrutura da base de dados
+* abrir o admin
+* admin dashboard, permite fazer de forma amigável
+* podemos modificar email na base de dados do Pycham e vemos mudado no admin. Se mudarmos no admin, aparece mudado no Pycharm.
+* mostra dois modelos, groups e users
+* no meu nome vejo o mesmo que na base de dados
+* se alterar as permissões no admin, podemos ver as alterações na base de dados 
+* devemos registar modelo na aplicação admin
+```python
+from .models import Simple
+
+admin.register(Simple)
+```
+* no admin aparece a classe
+* se adicionarmos 
+```python
+def __str__(self):
+   return self.url
+```
+* o admin deve ser userfriendly, deve poder ser usado por não-programadores
 
 ## create update delete
 * adicionar conteudos a base de dados com código, `py manage.py shell`
@@ -299,3 +317,9 @@ vela = Desporto.objects.get(nome='vela')
 vela.aluno_set.all()         # 
 # <QuerySet [<Aluno: Luis>, <Aluno: Ana>]>
 ```
+
+
+## USar outra base de dados
+https://docs.djangoproject.com/en/4.0/ref/settings/#std:setting-DATABASES
+
+* em settings.py, DATABASES especifica a base de dados usada
