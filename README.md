@@ -47,7 +47,7 @@ https://courses.prettyprinted.com/courses/django-database-essentials/lectures/46
 ```python
 from .models import Simple
 
-admin.register(Simple)
+admin.site.register(Simple)
 ```
 * no admin aparece a classe
 * se adicionarmos 
