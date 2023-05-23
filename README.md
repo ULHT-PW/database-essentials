@@ -218,7 +218,7 @@ class Language(models.Model):
         
 class Framework(models.Model):
     name = models.CharField(max_length=10)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE) # se apagamos o pai, apaga os filhos
+    language = models.ForeignKey(Language, on_delete=models.CASCADE, related_name="frameworks") # se apagamos o pai, apaga os filhos
 ```
 
 Podemos criar alguns objetos, linguagem **Python** com frameworks *Django* e *Flask*, e **Java** com *Spring*:
@@ -228,15 +228,18 @@ python = Language(name='Python')
 python.save()
 django = Framework(name='Django')
 django.language = python
+django.save()
 flask = Framework(name='Flask', language=python)
 flask.save()
-django.save()
 java=Language(name='Java')
 java.save()
 spring = Framework(name='Spring', language=java)
 spring.save()
 Framework.objects.all()
 # <QuerySet [<Framework: Flask>, <Framework: Django>, <Framework: Spring>]>
+python.frameworks.all()
+# <QuerySet [<Framework: Flask>, <Framework: Django>]>
+
 ```
 
 ## Consultas de relações One To Many
